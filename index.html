@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChromaCorrect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .muted-foreground {
+            color: #64748b;
+        }
+        .primary-button {
+            background-color: #6699cc;
+            color: #f8fafc;
+        }
+        .primary-button:hover {
+            background-color: #5a88b8;
+        }
+        .primary-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .link-button {
+             background-color: #6699cc;
+             color: #f8fafc;
+        }
+         .link-button:hover {
+            background-color: #5a88b8;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen flex-col items-center justify-center p-4">
+
+    <div class="w-full max-w-lg rounded-lg card text-slate-900">
+        <div class="flex flex-col space-y-1.5 p-6 text-center">
+            <h1 class="text-3xl font-bold tracking-tight">Welcome to ChromaCorrect</h1>
+            <p class="pt-2 text-sm muted-foreground">
+                Your personal AI-powered vision correcting tool. Let's get started by analyzing your color vision profile.
+            </p>
+        </div>
+        <div class="p-6 pt-0 space-y-6">
+            <div class="text-center space-y-4 rounded-lg border bg-slate-900/5 p-4">
+                <p class="font-medium">Step 1: Take the Test</p>
+                <p class="text-sm muted-foreground">
+                    Click the button below to take a professional color blindness test. It will open in a new tab.
+                </p>
+                <a href="https://enchroma.com/pages/color-blindness-test" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 link-button">
+                    Open EnChroma Test
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 ml-2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" x2="21" y1="14" y2="3"></line></svg>
+                </a>
+            </div>
+
+            <div class="space-y-3">
+                <div class="text-center">
+                    <p class="font-medium">Step 2: Select Your Result</p>
+                    <p class="text-sm muted-foreground">
+                        Once you're done, select your EnChroma test result from the dropdown.
+                    </p>
+                </div>
+                <div class="relative pt-2">
+                    <select id="test-result" class="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base text-center ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2">
+                        <option value="">-- Select your result --</option>
+                        <option>Normal Color Vision</option>
+                        <option>Protan Color Blind</option>
+                        <option>Mild Protanomaly</option>
+                        <option>Moderate Protanomaly</option>
+                        <option>Deutan Color Blind</option>
+                        <option>Mild Deuteranomaly</option>
+                        <option>Moderate Deuteranomaly</option>
+                        <option>Tritan Color Blind</option>
+                        <option>Mild Tritanomaly</option>
+                        <option>Moderate Tritanomaly</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center p-6 pt-0">
+            <button id="continue-button" class="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 primary-button" disabled>
+                Continue
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const testResultInput = document.getElementById('test-result');
+        const continueButton = document.getElementById('continue-button');
+
+        // enable/disable button
+        testResultInput.addEventListener('change', () => {
+            continueButton.disabled = testResultInput.value === '';
+        });
+
+        // mapping logic
+        function mapEnchromaResultToVector(resultText) {
+            const normalized = resultText.toLowerCase().replace(/\s+/g, "");
+            const brightness = 0.5;
+            const remap = 0.5;
+            let RG, BY;
+
+            switch (normalized) {
+                case 'normalcolorvision':
+                    RG = 0.0; BY = 0.0; break;
+                case 'protancolorblind':
+                    RG = 1.0; BY = 0.0; break;
+                case 'protanomaly':
+                case 'mildprotanomaly':
+                case 'moderateprotanomaly':
+                    RG = 0.7; BY = 0.0; break;
+                case 'deutancolorblind':
+                    RG = 1.0; BY = 0.0; break;
+                case 'deuteranomaly':
+                case 'milddeuteranomaly':
+                case 'moderatedeuteranomaly':
+                    RG = 0.7; BY = 0.0; break;
+                case 'tritancolorblind':
+                    RG = 0.0; BY = 1.0; break;
+                case 'tritanomaly':
+                case 'mildtritanomaly':
+                case 'moderatetritanomaly':
+                    RG = 0.0; BY = 0.7; break;
+                default:
+                    throw new Error("Unrecognized EnChroma result: " + resultText);
+            }
+
+            return [RG, BY, brightness, remap];
+        }
+
+        function vectorToBase64(vector) {
+            return btoa(JSON.stringify(vector));
+        }
+
+        continueButton.addEventListener('click', () => {
+            try {
+                const vector = mapEnchromaResultToVector(testResultInput.value);
+                const encoded = vectorToBase64(vector);
+                console.log("User test result:", testResultInput.value);
+                console.log("Vector:", vector);
+                console.log("Base64:", encoded);
+                alert("Paste this key in the app:\n" + encoded);
+            } catch (e) {
+                alert("Error: " + e.message);
+            }
+        });
+    </script>
+
+</body>
+</html>
+
