@@ -1,4 +1,4 @@
-The site for an upcoming color blindness corrector app for my hackathon
+The site for an upcoming color blindness corrector app.
 
 Visit below:-
 https://chromacorrect.vercel.app/
